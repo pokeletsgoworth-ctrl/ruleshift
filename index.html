@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RULESHIFT — Every round, the rules change</title>
+<meta name="description" content="RULESHIFT is a competitive multiplayer FPS where a wheel picks a new mode before every round.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#FF5A1F;--ink:#0B0C0E;--panel:#111316;--panel2:#0F1013;--line:#22252A;--line2:#2A2D32;--muted:#B4AEA3;--dim:#8E897F;--text:#EDE8DF}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ink);color:var(--text);font-family:'Chakra Petch',system-ui,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+.display{font-family:'Big Shoulders Display',sans-serif;font-weight:900;text-transform:uppercase;line-height:1;margin:0}
+.eyebrow{font-size:14px;font-weight:600;letter-spacing:.2em;color:var(--accent);text-transform:uppercase}
+.h2{font-size:clamp(40px,5vw,64px)}
+.lead{margin:0;font-size:18px;line-height:1.6;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 26px;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:16px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:0}
+.btn-primary{background:var(--accent);color:var(--ink)}
+.btn-ghost{background:transparent;color:var(--text);border:2px solid #3A3E45}
+.btn-ghost:hover{border-color:var(--accent)}
+section{border-bottom:1px solid var(--line)}
+header{border-bottom:1px solid var(--line)}
+.nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:26px;letter-spacing:.06em}
+.nav nav{display:flex;flex-wrap:wrap;align-items:center;gap:24px;font-size:15px;font-weight:500;letter-spacing:.08em;text-transform:uppercase}
+.nav nav a{color:#C9C3B8;text-decoration:none}
+.nav nav a.cta{background:var(--accent);color:var(--ink);padding:12px 18px;font-weight:700}
+.hero{background-image:linear-gradient(#16181C 1px,transparent 1px),linear-gradient(90deg,#16181C 1px,transparent 1px);background-size:48px 48px}
+.hero .wrap{padding-top:80px;padding-bottom:96px;display:flex;flex-wrap:wrap;align-items:center;gap:56px}
+.hero-text{flex:1 1 460px;min-width:0;display:flex;flex-direction:column;gap:24px}
+.tag{display:flex;align-items:center;gap:10px}
+.tag i{width:10px;height:10px;background:var(--accent);display:inline-block}
+.hero h1{font-size:clamp(72px,11vw,148px);line-height:.86}
+.tagline{font-size:clamp(28px,3.4vw,40px);font-weight:800;line-height:1.05}
+.hero-wheel{flex:1 1 400px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:28px}
+.wheel-box{position:relative;width:100%;max-width:440px}
+.pointer{position:absolute;left:50%;top:-14px;margin-left:-20px;z-index:2}
+.wheel{width:100%;aspect-ratio:1/1;transition:transform 2.6s cubic-bezier(.12,.7,.18,1)}
+.readout{width:100%;max-width:440px;border:2px solid var(--line2);background:var(--panel);padding:18px 22px;display:flex;flex-direction:column;gap:6px}
+.readout .k{font-size:13px;font-weight:600;letter-spacing:.2em;color:var(--accent)}
+.readout .n{font-size:34px}
+.readout .r{font-size:16px;line-height:1.5;color:var(--muted)}
+.alt{background:var(--panel2)}
+.pad{padding-top:96px;padding-bottom:96px;display:flex;flex-direction:column;gap:48px}
+.trailer{width:100%;aspect-ratio:16/9;background:#16181C;border:2px solid var(--line2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+.play{width:96px;height:96px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.step{border-top:4px solid var(--accent);background:var(--panel);padding:28px;display:flex;flex-direction:column;gap:12px}
+.step .num{font-size:56px;color:#3A3E45}
+.step h3{font-size:30px;font-weight:800}
+.step p{margin:0;font-size:17px;line-height:1.6;color:var(--muted)}
+.modes-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px}
+.modes{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.mode{min-height:210px;padding:24px;display:flex;flex-direction:column;gap:14px;background:var(--panel);border:2px solid var(--line2);transition:border-color .3s,background .3s}
+.mode.sel{border-color:var(--accent);background:#1A1C20}
+.mode .top{display:flex;align-items:center;justify-content:space-between}
+.mode svg{stroke:var(--text)}
+.mode.sel svg{stroke:var(--accent)}
+.mode .no{font-size:13px;font-weight:600;letter-spacing:.16em;color:var(--dim)}
+.mode h3{font-size:28px;font-weight:800}
+.mode p{margin:0;font-size:16px;line-height:1.55;color:var(--muted)}
+.feel .wrap{padding-top:96px;padding-bottom:96px;display:flex;flex-wrap:wrap;align-items:center;gap:56px}
+.reticle{flex:1 1 380px;min-width:0;max-width:480px;aspect-ratio:1/1;background:var(--panel);border:2px solid var(--line2);display:flex;align-items:center;justify-content:center}
+.feel-text{flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:28px}
+.point{display:flex;gap:16px}
+.point svg{flex:none;margin-top:2px}
+.point h3{margin:0 0 4px;font-size:19px;font-weight:700}
+.point p{margin:0;font-size:16px;line-height:1.6;color:var(--muted)}
+.cta-band{background:var(--accent);color:var(--ink);border:0}
+.cta-band .wrap{padding-top:88px;padding-bottom:88px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:40px}
+.cta-band h2{font-size:clamp(44px,6vw,80px);line-height:.95}
+.cta-band p{margin:14px 0 0;font-size:18px;line-height:1.6;max-width:520px}
+.signup{flex:1 1 380px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.signup label{font-size:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.row{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.row input{flex:1 1 220px;min-width:0;min-height:52px;padding:0 16px;border:2px solid var(--ink);background:#FFF5EF;color:var(--ink);font-family:'Chakra Petch',sans-serif;font-size:17px}
+.btn-dark{background:var(--ink);color:var(--text)}
+.btn-outline-dark{border:2px solid var(--ink);color:var(--ink);background:transparent}
+.thanks{min-height:52px;display:none;align-items:center;padding:0 18px;background:var(--ink);color:var(--text);font-weight:700;font-size:17px}
+footer .wrap{padding-top:32px;padding-bottom:32px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;font-size:14px;color:var(--dim)}
+@media (prefers-reduced-motion: reduce){.wheel{transition:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav" style="padding:18px 24px">
+    <a class="logo" href="#top">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="color:var(--accent)"><circle cx="12" cy="12" r="9"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg>
+      RULESHIFT
+    </a>
+    <nav aria-label="Main">
+      <a href="#modes">Modes</a>
+      <a href="#how">How it works</a>
+      <a class="cta" href="#wishlist">Wishlist</a>
+    </nav>
+  </div>
+</header>
+
+<section id="top" class="hero">
+  <div class="wrap">
+    <div class="hero-text">
+      <div class="eyebrow tag"><i></i>Multiplayer FPS · In development</div>
+      <h1 class="display">RULE<br>SHIFT</h1>
+      <p class="display tagline">Every round, the rules change.</p>
+      <p class="lead" style="max-width:520px">A competitive shooter with premium gunplay and one twist: before each round, the wheel picks a new mode. One bullet. No HUD. Sideways gravity. Adapt fast or lose the round.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;padding-top:8px">
+        <a class="btn btn-primary" href="#wishlist">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Wishlist on Steam
+        </a>
+        <button class="btn btn-ghost js-spin" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></svg>
+          Spin the wheel
+        </button>
+      </div>
+    </div>
+
+    <div class="hero-wheel">
+      <div class="wheel-box">
+        <svg class="pointer" viewBox="0 0 40 30" width="40" height="30" aria-hidden="true"><path d="M4 2h32L20 28z" fill="var(--accent)" stroke="#0B0C0E" stroke-width="2"/></svg>
+        <div class="wheel" id="wheel" style="transform:rotate(-45deg)">
+          <svg viewBox="0 0 400 400" width="100%" height="100%" role="img" aria-label="Mode wheel with eight game modes">
+            <circle cx="200" cy="200" r="198" fill="#0B0C0E" stroke="#3A3E45" stroke-width="3"/>
+            <g stroke="#0B0C0E" stroke-width="3">
+              <path d="M200 200 L127.29 24.46 A190 190 0 0 1 272.71 24.46 Z" fill="#1C1E22"/>
+              <path d="M200 200 L272.71 24.46 A190 190 0 0 1 375.54 127.29 Z" fill="#2A2D32"/>
+              <path d="M200 200 L375.54 127.29 A190 190 0 0 1 375.54 272.71 Z" fill="#1C1E22"/>
+              <path d="M200 200 L375.54 272.71 A190 190 0 0 1 272.71 375.54 Z" fill="#2A2D32"/>
+              <path d="M200 200 L272.71 375.54 A190 190 0 0 1 127.29 375.54 Z" fill="#1C1E22"/>
+              <path d="M200 200 L127.29 375.54 A190 190 0 0 1 24.46 272.71 Z" fill="#2A2D32"/>
+              <path d="M200 200 L24.46 272.71 A190 190 0 0 1 24.46 127.29 Z" fill="#1C1E22"/>
+              <path d="M200 200 L24.46 127.29 A190 190 0 0 1 127.29 24.46 Z" fill="#2A2D32"/>
+            </g>
+            <g font-family="Chakra Petch, sans-serif" font-weight="700" font-size="13" letter-spacing="1.5" fill="#EDE8DF" text-anchor="middle">
+              <text x="200" y="64">STANDARD</text>
+              <text x="200" y="64" transform="rotate(45 200 200)">LAST BULLET</text>
+              <text x="200" y="64" transform="rotate(90 200 200)">BLACKOUT</text>
+              <text x="200" y="64" transform="rotate(135 200 200)">GRAVITY</text>
+              <text x="200" y="64" transform="rotate(180 200 200)">BOUNTY</text>
+              <text x="200" y="64" transform="rotate(225 200 200)">HOT FLOOR</text>
+              <text x="200" y="64" transform="rotate(270 200 200)">GUN SMITH</text>
+              <text x="200" y="64" transform="rotate(315 200 200)">SQUAD</text>
+            </g>
+            <circle cx="200" cy="200" r="120" fill="none" stroke="#5A5F68" stroke-width="2"/>
+            <circle cx="200" cy="200" r="62" fill="#0B0C0E" stroke="var(--accent)" stroke-width="4"/>
+            <g stroke="var(--accent)" stroke-width="4" fill="none"><path d="M200 162v22M200 216v22M162 200h22M216 200h22"/></g>
+            <circle cx="200" cy="200" r="6" fill="var(--accent)"/>
+          </svg>
+        </div>
+      </div>
+      <div class="readout" aria-live="polite">
+        <div class="k">NEXT ROUND · ROUND <span id="round">1</span></div>
+        <div class="display n" id="mode-name">Last Bullet</div>
+        <div class="r" id="mode-rule">One magazine for the whole round. Ammo only comes off the fallen.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" aria-labelledby="trailer-h">
+  <div class="wrap pad" style="gap:28px">
+    <h2 id="trailer-h" class="display h2">See it in action</h2>
+    <!-- Replace this box with your trailer, e.g. a YouTube embed -->
+    <div class="trailer">
+      <div class="play"><svg width="40" height="40" viewBox="0 0 24 24" fill="#0B0C0E" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></div>
+      <div style="font-size:15px;font-weight:600;letter-spacing:.2em;color:var(--muted)">TRAILER COMING SOON</div>
+    </div>
+  </div>
+</section>
+
+<section id="how" aria-labelledby="how-h">
+  <div class="wrap pad">
+    <div style="display:flex;flex-direction:column;gap:14px;max-width:680px">
+      <div class="eyebrow">How a match works</div>
+      <h2 id="how-h" class="display h2">Same guns. New rules. Every round.</h2>
+    </div>
+    <div class="grid3">
+      <div class="step"><div class="display num">01</div><h3 class="display">Spin</h3><p>Before every round, the wheel locks in a mode for both teams. Nobody knows what's coming.</p></div>
+      <div class="step"><div class="display num">02</div><h3 class="display">Adapt</h3><p>Swap your loadout, rethink your routes and find the edge the new rules give you.</p></div>
+      <div class="step"><div class="display num">03</div><h3 class="display">Win</h3><p>First team to four rounds takes the match. No two rounds play the same way.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="modes" class="alt" aria-labelledby="modes-h">
+  <div class="wrap pad">
+    <div class="modes-head">
+      <div style="display:flex;flex-direction:column;gap:14px;max-width:640px">
+        <div class="eyebrow">The wheel</div>
+        <h2 id="modes-h" class="display h2">Eight modes at launch</h2>
+        <p class="lead">Each one bends a single rule. Learn them all, because you won't get to choose.</p>
+      </div>
+      <button class="btn btn-ghost js-spin" type="button" style="min-height:48px;font-size:15px">Spin again</button>
+    </div>
+    <div class="modes" id="modes-grid"></div>
+  </div>
+</section>
+
+<section class="feel" aria-labelledby="feel-h">
+  <div class="wrap">
+    <div class="reticle">
+      <svg viewBox="0 0 300 300" width="80%" height="80%" role="img" aria-label="Weapon sight reticle">
+        <g fill="none" stroke="#3A3E45" stroke-width="2">
+          <circle cx="150" cy="150" r="130"/><circle cx="150" cy="150" r="90" stroke-dasharray="6 10"/>
+          <path d="M150 10v60M150 230v60M10 150h60M230 150h60"/>
+        </g>
+        <g fill="none" stroke="var(--accent)" stroke-width="4"><circle cx="150" cy="150" r="40"/><path d="M150 118v18M150 164v18M118 150h18M164 150h18"/></g>
+        <circle cx="150" cy="150" r="4" fill="var(--accent)"/>
+        <g font-family="Chakra Petch, sans-serif" font-weight="600" font-size="12" letter-spacing="2" fill="#8E897F">
+          <text x="22" y="34">RECOIL ▲ 0.4</text><text x="200" y="34">ADS 0.21s</text>
+          <text x="22" y="280">30 / 30</text><text x="210" y="280">SPREAD 1.2</text>
+        </g>
+      </svg>
+    </div>
+    <div class="feel-text">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="eyebrow">Built for feel</div>
+        <h2 id="feel-h" class="display h2">Chaos on top. Precision underneath.</h2>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:22px">
+        <div class="point">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="3"/><path d="M12 8v7M8 22l4-7 4 7M6 12h12"/></svg>
+          <div><h3>True full-body first person</h3><p>No floating arms. What you see is exactly what your opponent sees.</p></div>
+        </div>
+        <div class="point">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h14l3 3v3H8l-2 4H3zM7 10V7h6v3"/></svg>
+          <div><h3>Weighty weapon handling</h3><p>Every draw, reload and mag check is animated, and in some modes it's how you count your ammo.</p></div>
+        </div>
+        <div class="point">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>
+          <div><h3>The rules change. The guns don't.</h3><p>Core gunplay stays tight in every mode, so skill always carries.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="wishlist" class="cta-band" aria-labelledby="cta-h">
+  <div class="wrap">
+    <div style="flex:1 1 460px;min-width:0">
+      <h2 id="cta-h" class="display">Get in the first playtest</h2>
+      <p>Wishlist on Steam and drop your email. Playtest invites go out to the list first.</p>
+    </div>
+    <div class="signup">
+      <!-- To actually collect emails: create a free form at formspree.io and put its URL in action="" below -->
+      <form id="signup-form" action="" method="POST">
+        <label for="email">Email address</label>
+        <div class="row">
+          <input id="email" name="email" type="email" required placeholder="you@example.com">
+          <button class="btn btn-dark" type="submit">Join</button>
+        </div>
+      </form>
+      <div class="thanks" id="thanks">You're on the list. See you in the playtest.</div>
+      <!-- Replace # with your Steam store link when it exists -->
+      <a class="btn btn-outline-dark" href="#">Wishlist on Steam</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span class="logo" style="font-size:22px">RULESHIFT</span>
+    <span>© 2026 RULESHIFT. All rights reserved.</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var modes = [
+    { name: 'Standard Issue', rule: 'Classic team deathmatch. The calm before the chaos.', icon: 'M12 3v4M12 17v4M3 12h4M17 12h4M7 12a5 5 0 1 0 10 0a5 5 0 1 0-10 0' },
+    { name: 'Last Bullet', rule: 'One magazine for the whole round. Ammo only comes off the fallen.', icon: 'M10 21V10c0-3 1-6 2-7 1 1 2 4 2 7v11zM9 21h6' },
+    { name: 'Blackout', rule: 'Your HUD fails piece by piece: minimap, ammo counter, then crosshair.', icon: 'M3 3l18 18M10.6 6.1A10 10 0 0 1 12 6c5 0 9 6 9 6a17 17 0 0 1-2.2 2.8M6.6 6.6C4.3 8.1 3 12 3 12s4 6 9 6a8.6 8.6 0 0 0 3.4-.7' },
+    { name: 'Gravity Shift', rule: 'Every 30 seconds the arena tilts and walls become floors.', icon: 'M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4' },
+    { name: 'Bounty Board', rule: 'The top fragger is marked for everyone. Cash out or get hunted.', icon: 'M12 2l3 6 6 .9-4.5 4.4 1 6.2L12 16.6 6.5 19.5l1-6.2L3 8.9 9 8z' },
+    { name: 'Hot Floor', rule: 'Zones of the map turn lethal without warning. Fight on islands.', icon: 'M12 22c4 0 7-3 7-7 0-4-3-6-4-9-1 2-2 3-3 3 0-2 0-4-2-6-1 4-5 7-5 12 0 4 3 7 7 7z' },
+    { name: 'Gun Smith', rule: 'Build a hybrid weapon from parts you looted last round.', icon: 'M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z' },
+    { name: 'Shrinking Squad', rule: 'Every kill recruits your victim. Last survivor vs. everyone.', icon: 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-1a6 6 0 0 1 12 0v1M19 8v6M16 11h6' }
+  ];
+  var idx = 1, spins = 0, round = 1;
+  var grid = document.getElementById('modes-grid');
+
+  modes.forEach(function (m, i) {
+    var card = document.createElement('div');
+    card.className = 'mode';
+    card.innerHTML =
+      '<div class="top"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + m.icon + '"/></svg>' +
+      '<span class="no">0' + (i + 1) + '</span></div>' +
+      '<h3 class="display">' + m.name + '</h3><p>' + m.rule + '</p>';
+    grid.appendChild(card);
+  });
+
+  function render() {
+    document.getElementById('wheel').style.transform = 'rotate(' + (spins * 1080 - idx * 45) + 'deg)';
+    document.getElementById('round').textContent = round;
+    document.getElementById('mode-name').textContent = modes[idx].name;
+    document.getElementById('mode-rule').textContent = modes[idx].rule;
+    Array.prototype.forEach.call(grid.children, function (c, i) { c.classList.toggle('sel', i === idx); });
+  }
+
+  function spin() {
+    var next = idx;
+    while (next === idx) next = Math.floor(Math.random() * modes.length);
+    idx = next; spins++; round++;
+    render();
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.js-spin'), function (b) { b.addEventListener('click', spin); });
+  render();
+
+  var form = document.getElementById('signup-form');
+  form.addEventListener('submit', function (e) {
+    var action = form.getAttribute('action');
+    if (!action) {
+      e.preventDefault();
+      form.style.display = 'none';
+      document.getElementById('thanks').style.display = 'flex';
+      return;
+    }
+    e.preventDefault();
+    fetch(action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } })
+      .then(function () { form.style.display = 'none'; document.getElementById('thanks').style.display = 'flex'; })
+      .catch(function () { alert('Something went wrong. Please try again.'); });
+  });
+})();
+</script>
+</body>
+</html>
